@@ -1,5 +1,7 @@
 import Note from "./components/Note"
 
+const words = ['these', 'are', 'words']
+
 const App = ({notes}) => {
   return (
     <div>

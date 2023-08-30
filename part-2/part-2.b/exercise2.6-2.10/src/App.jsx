@@ -4,13 +4,7 @@ import PersonForm from "./components/PersonForm";
 import Persons from "./components/Persons";
 
 const App = () => {
-  const [persons, setPersons] = useState([
-    { 
-      name: 'Percy Jackson',
-      number: '503-956-2505'
-     }
-  ])
-
+  const [persons, setPersons] = useState([])
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
   const [newNameFilter, setNewNameFilter] = useState('')
@@ -31,18 +25,17 @@ const App = () => {
     for (let i = 0; i < persons.length; i++) {
       if (persons[i].name === newPerson.name || persons[i].number === newPerson.number) {
         res = true
+        break
       }
     }
 
     if (res) {
       alert(`${newName} or ${newNumber} is already added to the phonebook`)
-      setNewName('')
-      setNewNumber('')
     } else{
       setPersons(persons.concat(newPerson))
-      setNewName('')
-      setNewNumber('')
     }
+    setNewName('')
+    setNewNumber('')
 
   }
 

@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import axios from 'axios'
+import personServices from "./services/persons";
 import NameFilter from "./components/NameFilter";
 import PersonForm from "./components/PersonForm";
 import Persons from "./components/Persons";
@@ -11,46 +12,57 @@ const App = () => {
   const [newNameFilter, setNewNameFilter] = useState('')
 
   useEffect(() => {
-    axios
-      .get("http://localhost:3001/persons")
-      .then((res) => {
-        setPersons(res.data)
+    personServices
+      .getAll()
+      .then((intialPersons) => {
+        setPersons(intialPersons)
       })},
     [])
 
   const addPerson = (event) => {
     event.preventDefault()
-    console.log('Button Clicked', event.target)
 
     const newPerson = {
       name: newName,
       number: newNumber
     }
 
-    console.log(newPerson)
+    const personCopy = persons.find(person => person.name === newPerson.name)
 
-    let res = false
-
-    for (let i = 0; i < persons.length; i++) {
-      if (persons[i].name === newPerson.name || persons[i].number === newPerson.number) {
-        res = true
-        break
+    if (personCopy) {
+      if (window.confirm(`${newPerson.name} Already in the phonebook, would you like to replace the the old number with ${newPerson.number}?`)) {
+        personServices
+        .update(personCopy.id, newPerson)
+        .then(returnedPerson => {
+          setPersons(persons.map(person => person.id !== personCopy ? person : returnedPerson))
+        })
+        window.location.reload()
+      }else{
+        Alert('Nothing updated')
       }
-    }
-
-    if (res) {
-      alert(`${newName} or ${newNumber} is already added to the phonebook`)
     } else{
-      setPersons(persons.concat(newPerson))
+      personServices
+        .create(newPerson)
+        .then(returnedPerson => {
+          setPersons(persons.concat(returnedPerson))
+        })
     }
     setNewName('')
     setNewNumber('')
-
   }
 
   const handleNameChange = (event) => setNewName(event.target.value)
   const handleNumberChange = (event) => setNewNumber(event.target.value)
   const handleNewNameFilterChange = (event) => setNewNameFilter(event.target.value)
+  const handleDelete = (id, deleteName) => {
+
+    if (window.confirm(`Are you sure you would like to delete ${deleteName} from the phonebook?`)) {
+      personServices.remove(id)
+      window.location.reload()
+    } else{
+      alert(`${deleteName} not removed`)
+    }
+  }
 
   const personsToShow = newNameFilter === '' ? persons : 
   persons.filter(person => person.name.toLowerCase().includes(newNameFilter.toLowerCase()))
@@ -65,7 +77,7 @@ const App = () => {
                   newNumber={newNumber}
                   handleSubmit={addPerson}/>
       <h2>Numbers</h2>
-      <Persons personsToShow={personsToShow}/>
+      <Persons personsToShow={personsToShow} handleClick={handleDelete}/>
     </div>
   )
 }

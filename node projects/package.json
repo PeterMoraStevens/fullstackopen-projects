@@ -4,13 +4,14 @@
   "description": "a hello world node project",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js",
-    "dev": "nodemon index.js",
+    "start_backend": "node index.js",
+    "dev_backend": "nodemon index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Peter Mora-Stevens",
   "license": "MIT",
   "dependencies": {
+    "cors": "^2.8.5",
     "express": "^4.18.2"
   },
   "devDependencies": {
